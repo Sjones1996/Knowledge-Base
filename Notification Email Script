@@ -1,0 +1,43 @@
+var kbnum = new GlideRecord('kb_knowledge');
+kbnum.addQuery('number', '=', event.parm2);
+//gs.log("I am after addquery" + event.parm2);
+kbnum.query();
+while (kbnum.next()) {
+    gs.log("after query" + kbnum);
+    //gs.log("Author:" + kbnum.author);
+    gs.log("Author email:" + kbnum.author.email);
+    email.setSubject("Knowledge Article:" + kbnum.number + " up for review.");
+}
+if (kbnum.valid_to <= gs.daysAgo(-14)) {
+    gs.log("After the first If" + kbnum.valid_to);
+    var gr = new GlideRecord('sys_user_grmember');
+    gr.addQuery('group', '=', kbnum.u_group);
+    gr.query();
+    while (gr.next()) {
+        //add to cc list
+        email.addAddress("cc", gr.user.email, gr.user.getDisplayValue());
+        gs.log("User email " + gr.user.email);
+    }
+    gs.log("after address1:" + kbnum.valid_to);
+    gs.log("Assignment Group " + kbnum.u_group);
+}
+if (kbnum.valid_to <= gs.daysAgo(-4) && kbnum.valid_to >= gs.daysAgo(-1)) {
+    gs.log("After else if");
+    var knowr = new GlideRecord('sys_user_has_role');
+    knowr.addQuery('role.name=knowledge');
+    knowr.query();
+    while (knowr.next()) {
+        gs.log("knowr.role is: " + knowr.role.name);
+        email.addAddress("cc", knowr.user.email, knowr.user.getDisplayValue());
+    }
+}
+if (kbnum.valid_to <= gs.daysAgo(1)) {
+    var knowadmin = new GlideRecord('sys_user_has_role');
+    knowadmin.addQuery('role.name=knowledge_admin');
+    knowadmin.query();
+    while (knowadmin.next()) {
+        gs.log("knowadmin.role is: " + knowadmin.role.name);
+        email.addAddress("cc", knowadmin.user.email, knowadmin.user.getDisplayValue());
+    }
+
+}
