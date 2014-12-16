@@ -1,0 +1,35 @@
+function runPublish() {
+    var numberOfDaysToAdd = 0;
+    gs.log("I am before the if statement");
+    gs.log("expiration = " + current.u_expiration);
+    if (current.u_expiration == '7 Days') {
+        gs.log("I am in the if statement");
+        numberOfDaysToAdd = 7;
+    } else if (current.u_expiration == '1 Month') {
+        numberOfDaysToAdd = 30;
+    } else if (current.u_expiration == '3 Months') {
+        numberOfDaysToAdd = 90;
+    } else if (current.u_expiration == '6 Months') {
+        numberOfDaysToAdd = 180;
+    }
+
+    var someDate = new Date();
+    //var numberOfDaysToAdd = 0;
+    someDate.setDate(someDate.getDate() + numberOfDaysToAdd);
+
+    var dd = someDate.getDate();
+    var mm = someDate.getMonth() + 1;
+    var y = someDate.getFullYear();
+
+    var someFormattedDate = y + '-' + mm + '-' + dd;
+    gs.log("someFormattedDate: " + someFormattedDate);
+    current.valid_to = someFormattedDate;
+
+    //gsftSubmit(null, g_form.getFormElement(), 'publish_kb');
+}
+
+if (kb_knowledge.u_expiration) {
+    runPublish();
+}
+gs.log("runPublish");
+current.update();
